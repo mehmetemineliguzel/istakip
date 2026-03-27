@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>İş Takip</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f7f6f3;--surface:#fff;--surface2:#f0efe9;--surface3:#e8e7e0;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1a1917;--text2:#6b6a66;--text3:#a8a7a2;
+  --accent:#1a1917;
+  --blue-bg:#E6F1FB;--blue-tx:#0C447C;
+  --green-bg:#EAF3DE;--green-tx:#27500A;--green:#3B6D11;
+  --amber-bg:#FAEEDA;--amber-tx:#633806;--amber:#BA7517;
+  --red-bg:#FCEBEB;--red-tx:#791F1F;--red:#A32D2D;
+  --gray-bg:#F1EFE8;--gray-tx:#444441;
+  --purple-bg:#EEEDFE;--purple-tx:#534AB7;
+  --teal-bg:#E1F5EE;--teal-tx:#085041;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0;}
+.logo{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--border);}
+.logo-mark{font-size:16px;font-weight:500;letter-spacing:-0.03em;color:var(--text);}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:2px;font-weight:300;}
+.nav{padding:.5rem 0;flex:1;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 1.25rem;font-size:13.5px;cursor:pointer;color:var(--text2);transition:all .12s;position:relative;user-select:none;}
+.nav-item:hover{color:var(--text);background:var(--surface2);}
+.nav-item.active{color:var(--text);background:var(--surface2);font-weight:500;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--text);border-radius:0 2px 2px 0;}
+.nav-ico{width:15px;height:15px;opacity:.55;flex-shrink:0;}
+.nav-item.active .nav-ico{opacity:1;}
+.nav-badge{margin-left:auto;background:var(--surface3);border-radius:20px;padding:1px 8px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;}
+.sidebar-foot{padding:1rem 1.25rem;border-top:1px solid var(--border);}
+.sync{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text3);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);transition:background .3s;}
+.sync-dot.ing{background:var(--amber);animation:blink 1s infinite;}
+.sync-dot.err{background:var(--red);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;background:var(--green-bg);color:var(--green-tx);padding:2px 8px;border-radius:20px;margin-top:6px;font-weight:500;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink .8s infinite;}
+
+/* TOPBAR */
+.main{display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:.875rem 1.75rem;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.page-title{font-size:15px;font-weight:500;letter-spacing:-.02em;}
+.topbar-r{display:flex;align-items:center;gap:8px;}
+.btn{font-family:'DM Sans',sans-serif;font-size:12.5px;padding:7px 14px;border-radius:var(--rs);cursor:pointer;transition:all .12s;border:1px solid var(--border2);background:var(--surface);color:var(--text);}
+.btn:hover{background:var(--surface2);}
+.btn:active{transform:scale(.98);}
+.btn-p{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-p:hover{opacity:.85;}
+
+/* CONTENT */
+.content{padding:1.5rem 1.75rem;flex:1;overflow-y:auto;}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:1.5rem;}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.25rem;}
+.metric-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.metric-val{font-size:28px;font-weight:300;letter-spacing:-.04em;font-family:'DM Mono',monospace;color:var(--text);}
+
+/* KANBAN */
+.kanban{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.col{background:var(--surface2);border-radius:var(--r);padding:14px;}
+.col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.col-ttl{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;}
+.col-cnt{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1px 8px;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .12s;position:relative;}
+.card:hover{border-color:var(--border2);box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.card-ttl{font-size:13px;line-height:1.45;color:var(--text);margin-bottom:10px;padding-right:22px;}
+.card-ft{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.del{position:absolute;top:9px;right:9px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;opacity:0;transition:opacity .15s;line-height:1;padding:2px;}
+.card:hover .del,.proj-card:hover .del{opacity:1;}
+.del:hover{color:var(--red);}
+.badge{font-size:10.5px;padding:2px 8px;border-radius:20px;font-weight:500;}
+.b-h{background:var(--red-bg);color:var(--red-tx);}
+.b-m{background:var(--amber-bg);color:var(--amber-tx);}
+.b-l{background:var(--green-bg);color:var(--green-tx);}
+.b-aktif{background:var(--green-bg);color:var(--green-tx);}
+.b-bekliyor{background:var(--amber-bg);color:var(--amber-tx);}
+.b-pasif{background:var(--gray-bg);color:var(--gray-tx);}
+.av{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:500;flex-shrink:0;}
+.av-a{background:var(--purple-bg);color:var(--purple-tx);}
+.av-b{background:var(--teal-bg);color:var(--teal-tx);}
+.av-c{background:var(--amber-bg);color:var(--amber-tx);}
+.av-d{background:var(--red-bg);color:var(--red-tx);}
+.due{font-size:10.5px;color:var(--text3);margin-left:auto;font-family:'DM Mono',monospace;}
+.due.late{color:var(--red);}
+.empty-col{text-align:center;padding:1.5rem;color:var(--text3);font-size:12px;}
+
+/* PROJECTS */
+.proj-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.proj-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;position:relative;transition:border-color .12s;}
+.proj-card:hover{border-color:var(--border2);}
+.proj-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px;padding-right:24px;}
+.proj-client{font-size:12px;color:var(--text3);margin-bottom:1rem;}
+.prog{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s ease;}
+.proj-ft{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;}
+
+/* CUSTOMERS */
+.cust-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.crow{display:grid;grid-template-columns:2fr 2fr 1fr 1fr auto;gap:1rem;align-items:center;padding:11px 1.25rem;border-bottom:1px solid var(--border);font-size:13px;}
+.crow:last-child{border-bottom:none;}
+.crow.hdr{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;background:var(--surface2);}
+.cname{font-weight:500;display:flex;align-items:center;gap:8px;}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sdot-g{background:var(--green);}
+.sdot-a{background:var(--amber);}
+.sdot-x{background:var(--text3);}
+.act-btn{font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--border2);background:transparent;color:var(--text2);padding:4px 10px;border-radius:var(--rs);cursor:pointer;transition:all .12s;}
+.act-btn:hover{background:var(--surface2);}
+.act-cell{display:flex;align-items:center;gap:6px;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,14,12,.5);z-index:200;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:1.75rem;width:500px;max-width:95vw;animation:slideUp .15s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.modal h3{font-size:15px;font-weight:500;margin-bottom:1.25rem;letter-spacing:-.02em;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+.field input,.field select{width:100%;font-family:'DM Sans',sans-serif;font-size:13.5px;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus{border-color:var(--text);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-ft{display:flex;gap:8px;justify-content:flex-end;margin-top:1.5rem;}
+.prow{display:flex;align-items:center;gap:10px;}
+.prow input[type=range]{flex:1;accent-color:var(--accent);}
+.pval{font-size:13px;font-weight:500;font-family:'DM Mono',monospace;min-width:38px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--text);color:#fff;padding:10px 16px;border-radius:var(--r);font-size:13px;opacity:0;transition:opacity .2s;z-index:300;pointer-events:none;}
+.toast.show{opacity:1;}
+
+/* PAGE TOGGLE */
+.page{display:none;}
+.page.active{display:block;}
+
+@media(max-width:760px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .kanban{grid-template-columns:1fr;}
+  .proj-grid{grid-template-columns:1fr;}
+  .crow{grid-template-columns:1fr auto;}
+  .crow .sip,.crow .tut{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">İş Takip</div>
+    <div class="logo-sub">Takım panosu</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-item active" onclick="goTo('gorevler',this)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="12" height="12" rx="2.5"/><path d="M5 8l2 2 4-3"/></svg>
+      Görevler<span class="nav-badge" id="nb-g">0</span>
+    </div>
+    <div class="nav-item" onclick="goTo('projeler',this)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+      Projeler<span class="nav-badge" id="nb-p">0</span>
+    </div>
+    <div class="nav-item" onclick="goTo('musteriler',this)">
+      <svg class="nav-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="6" r="2.8"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+      Müşteriler<span class="nav-badge" id="nb-m">0</span>
+    </div>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="sync"><span class="sync-dot" id="sdot"></span><span id="slbl">Bağlanıyor…</span></div>
+    <div class="live-badge"><span class="live-dot"></span>Gerçek zamanlı</div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="ptitle">Görevler</div>
+    <div class="topbar-r">
+      <button class="btn" onclick="pull()">↻ Yenile</button>
+      <button class="btn btn-p" onclick="openModal()">+ Ekle</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="metrics">
+      <div class="metric"><div class="metric-lbl">Açık görev</div><div class="metric-val" id="m0">—</div></div>
+      <div class="metric"><div class="metric-lbl">Tamamlanan</div><div class="metric-val" id="m1">—</div></div>
+      <div class="metric"><div class="metric-lbl">Projeler</div><div class="metric-val" id="m2">—</div></div>
+      <div class="metric"><div class="metric-lbl">Aktif müşteri</div><div class="metric-val" id="m3">—</div></div>
+    </div>
+
+    <div id="pg-gorevler" class="page active">
+      <div class="kanban">
+        <div class="col"><div class="col-hdr"><span class="col-ttl">Bekliyor</span><span class="col-cnt" id="c0">0</span></div><div id="col-todo"></div></div>
+        <div class="col"><div class="col-hdr"><span class="col-ttl">Devam ediyor</span><span class="col-cnt" id="c1">0</span></div><div id="col-doing"></div></div>
+        <div class="col"><div class="col-hdr"><span class="col-ttl">Tamamlandı</span><span class="col-cnt" id="c2">0</span></div><div id="col-done"></div></div>
+      </div>
+    </div>
+
+    <div id="pg-projeler" class="page">
+      <div class="proj-grid" id="proj-grid"></div>
+    </div>
+
+    <div id="pg-musteriler" class="page">
+      <div class="cust-wrap">
+        <div class="crow hdr"><div>Müşteri</div><div class="sip">Son sipariş</div><div class="tut">Tutar</div><div>Durum</div><div></div></div>
+        <div id="cust-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="modal">
+  <div class="modal">
+    <h3 id="mtitle">Ekle</h3>
+    <div id="mbody"></div>
+    <div class="modal-ft">
+      <button class="btn" onclick="closeModal()">İptal</button>
+      <button class="btn btn-p" onclick="saveItem()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/data';
+const PC  = ['#185FA5','#0F6E56','#854F0B','#993556','#3B6D11','#534AB7'];
+const KA  = {Ali:'av-a',Berk:'av-b',Ceren:'av-c',Defne:'av-d'};
+const KI  = {Ali:'AL',Berk:'BK',Ceren:'CE',Defne:'DE'};
+const OPT = ['Ali','Berk','Ceren','Defne'];
+let db    = {gorevler:[],projeler:[],musteriler:[]};
+let curPg = 'gorevler';
+let nid   = Date.now();
+let timer = null;
+
+function setSS(s){
+  const d=document.getElementById('sdot'),l=document.getElementById('slbl');
+  d.className='sync-dot'+(s==='ing'?' ing':s==='err'?' err':'');
+  l.textContent=s==='ing'?'Kaydediliyor…':s==='err'?'Bağlantı hatası':'Senkronize';
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+async function pull(){
+  setSS('ing');
+  try{
+    const r=await fetch(API);
+    if(!r.ok)throw new Error();
+    db=await r.json();
+    setSS('ok');render();
+  }catch(e){setSS('err');toast('Sunucuya ulaşılamadı');}
+}
+
+async function push(){
+  setSS('ing');
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(db)});
+    if(!r.ok)throw new Error();
+    setSS('ok');
+  }catch(e){setSS('err');toast('Kayıt başarısız');}
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fd(d){if(!d)return'';const p=d.split('-');return p[2]+'.'+p[1];}
+function late(d,s){return d&&s!=='done'&&d<'2026-03-27';}
+function ob(ok){return ok?'b-h':'b-m';}
+
+function render(){renderG();renderP();renderM();renderMetrics();}
+
+function renderG(){
+  ['todo','doing','done'].forEach((s,i)=>{
+    const items=db.gorevler.filter(g=>g.durum===s);
+    document.getElementById(['c0','c1','c2'][i]).textContent=items.length;
+    const col=document.getElementById('col-'+s);
+    if(!items.length){col.innerHTML='<div class="empty-col">—</div>';return;}
+    col.innerHTML=items.map(g=>`
+      <div class="card" onclick="cycG(${g.id})">
+        <button class="del" onclick="event.stopPropagation();delG(${g.id})">×</button>
+        <div class="card-ttl">${esc(g.baslik)}</div>
+        <div class="card-ft">
+          <span class="badge ${g.oncelik==='yüksek'?'b-h':g.oncelik==='orta'?'b-m':'b-l'}">${g.oncelik}</span>
+          <span class="av ${KA[g.kisi]||'av-a'}">${KI[g.kisi]||'?'}</span>
+          ${g.tarih?`<span class="due${late(g.tarih,s)?' late':''}">${fd(g.tarih)}</span>`:''}
+        </div>
+      </div>`).join('');
+  });
+}
+
+function renderP(){
+  const g=document.getElementById('proj-grid');
+  if(!db.projeler.length){g.innerHTML='<div style="color:var(--text3);font-size:13px;padding:1rem 0;">Henüz proje yok</div>';return;}
+  g.innerHTML=db.projeler.map((p,i)=>`
+    <div class="proj-card">
+      <button class="del" onclick="delP(${p.id})">×</button>
+      <div class="proj-name">${esc(p.ad)}</div>
+      <div class="proj-client">${esc(p.musteri)}</div>
+      <div class="prog"><div class="prog-fill" style="width:${p.ilerleme}%;background:${PC[i%PC.length]}"></div></div>
+      <div class="proj-ft"><span>%${p.ilerleme} tamamlandı</span><span>${p.bitis?fd(p.bitis):'—'}</span></div>
+    </div>`).join('');
+}
+
+function renderM(){
+  const l=document.getElementById('cust-list');
+  if(!db.musteriler.length){l.innerHTML='<div style="padding:1.5rem;color:var(--text3);font-size:13px;">Henüz müşteri yok</div>';return;}
+  l.innerHTML=db.musteriler.map(m=>`
+    <div class="crow">
+      <div class="cname"><span class="sdot ${m.durum==='aktif'?'sdot-g':m.durum==='bekliyor'?'sdot-a':'sdot-x'}"></span>${esc(m.ad)}</div>
+      <div class="sip" style="font-size:12px;color:var(--text2);">${esc(m.siparis)}</div>
+      <div class="tut" style="font-family:'DM Mono',monospace;font-size:12px;">₺${m.tutar}</div>
+      <div><span class="badge b-${m.durum}">${m.durum}</span></div>
+      <div class="act-cell">
+        <button class="act-btn" onclick="cycM(${m.id})">Değiştir</button>
+        <button class="del" style="opacity:1;position:static;" onclick="delM(${m.id})">×</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderMetrics(){
+  document.getElementById('m0').textContent=db.gorevler.filter(g=>g.durum!=='done').length;
+  document.getElementById('m1').textContent=db.gorevler.filter(g=>g.durum==='done').length;
+  document.getElementById('m2').textContent=db.projeler.length;
+  document.getElementById('m3').textContent=db.musteriler.filter(m=>m.durum==='aktif').length;
+  document.getElementById('nb-g').textContent=db.gorevler.filter(g=>g.durum!=='done').length;
+  document.getElementById('nb-p').textContent=db.projeler.length;
+  document.getElementById('nb-m').textContent=db.musteriler.length;
+}
+
+function cycG(id){const g=db.gorevler.find(x=>x.id===id);if(!g)return;g.durum={todo:'doing',doing:'done',done:'todo'}[g.durum];renderG();renderMetrics();push();}
+function delG(id){db.gorevler=db.gorevler.filter(x=>x.id!==id);renderG();renderMetrics();push();toast('Görev silindi');}
+function delP(id){db.projeler=db.projeler.filter(x=>x.id!==id);renderP();renderMetrics();push();toast('Proje silindi');}
+function delM(id){db.musteriler=db.musteriler.filter(x=>x.id!==id);renderM();renderMetrics();push();toast('Müşteri silindi');}
+function cycM(id){const m=db.musteriler.find(x=>x.id===id);if(!m)return;m.durum={aktif:'bekliyor',bekliyor:'pasif',pasif:'aktif'}[m.durum];renderM();renderMetrics();push();}
+
+function goTo(pg,el){
+  curPg=pg;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-'+pg).classList.add('active');
+  document.getElementById('ptitle').textContent={gorevler:'Görevler',projeler:'Projeler',musteriler:'Müşteriler'}[pg];
+}
+
+function openModal(){
+  const t=document.getElementById('mtitle'),b=document.getElementById('mbody');
+  if(curPg==='gorevler'){
+    t.textContent='Görev ekle';
+    b.innerHTML=`
+      <div class="field"><label>Başlık</label><input type="text" id="f0" placeholder="Görevin kısaca açıklaması"/></div>
+      <div class="field-row">
+        <div class="field"><label>Kişi</label><select id="f1">${OPT.map(k=>`<option>${k}</option>`).join('')}</select></div>
+        <div class="field"><label>Öncelik</label><select id="f2"><option value="yüksek">Yüksek</option><option value="orta" selected>Orta</option><option value="düşük">Düşük</option></select></div>
+      </div>
+      <div class="field"><label>Bitiş tarihi</label><input type="date" id="f3"/></div>`;
+  } else if(curPg==='projeler'){
+    t.textContent='Proje ekle';
+    b.innerHTML=`
+      <div class="field"><label>Proje adı</label><input type="text" id="f0" placeholder="Proje adı"/></div>
+      <div class="field"><label>Müşteri</label><input type="text" id="f1" placeholder="Müşteri adı"/></div>
+      <div class="field"><label>İlerleme</label>
+        <div class="prow"><input type="range" id="f2" min="0" max="100" value="0" step="1" oninput="document.getElementById('pv').textContent=this.value+'%'"/>
+        <span class="pval" id="pv">0%</span></div></div>
+      <div class="field"><label>Bitiş tarihi</label><input type="date" id="f3"/></div>`;
+  } else {
+    t.textContent='Müşteri ekle';
+    b.innerHTML=`
+      <div class="field"><label>Müşteri / şirket</label><input type="text" id="f0" placeholder="Ad veya şirket"/></div>
+      <div class="field"><label>Son sipariş / konu</label><input type="text" id="f1" placeholder="Ne istediler?"/></div>
+      <div class="field-row">
+        <div class="field"><label>Tutar (₺)</label><input type="text" id="f2" placeholder="0"/></div>
+        <div class="field"><label>Durum</label><select id="f3"><option value="aktif">Aktif</option><option value="bekliyor">Bekliyor</option><option value="pasif">Pasif</option></select></div>
+      </div>`;
+  }
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('f0')?.focus(),50);
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+
+function saveItem(){
+  const v=id=>document.getElementById(id)?.value||'';
+  if(curPg==='gorevler'){
+    const b=v('f0').trim();if(!b)return;
+    db.gorevler.push({id:nid++,baslik:b,kisi:v('f1'),oncelik:v('f2'),tarih:v('f3'),durum:'todo'});
+    renderG();
+  } else if(curPg==='projeler'){
+    const a=v('f0').trim();if(!a)return;
+    db.projeler.push({id:nid++,ad:a,musteri:v('f1')||'—',ilerleme:parseInt(v('f2'))||0,bitis:v('f3')});
+    renderP();
+  } else {
+    const a=v('f0').trim();if(!a)return;
+    db.musteriler.push({id:nid++,ad:a,siparis:v('f1')||'—',tutar:v('f2')||'0',durum:v('f3')});
+    renderM();
+  }
+  renderMetrics();push();closeModal();toast('Kaydedildi ✓');
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if(e.key==='Enter'&&document.getElementById('modal').classList.contains('open')){e.preventDefault();saveItem();}});
+
+// Auto-refresh every 15 seconds
+setInterval(pull, 15000);
+pull();
+</script>
+</body>
+</html>
